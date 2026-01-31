@@ -1,5 +1,3 @@
-
- 
 <b><h2><center>Updates </center>
 <li>8/10/2024, fixed attempt iterator if connection is not made </li>
 </h1></b>
@@ -9,7 +7,7 @@
 This library is intended to be used with UART type EBYTE transceivers (E220-xxxTxxx), which are small wireless units for MCU's such as
 Teensy, ESP32, Arduino and others. This library lets users program the operating parameters and both send and receive data.
 This library is specific to E220 series only but will support the 400 or 900 series, or the 22 db or 30db units.
-All constants were extracted from several data sheets and listed in binary as that's how the data sheet represented each setting.
+All constants were extracted from several data sheets and listed in binary as that's how the data sheet represented each setting. This library is for the UART devices only.
  
 Usage of this library consumes around 600 bytes. 
 
@@ -33,7 +31,6 @@ E220-400T22S
 E220-400T22D
 E220-400T30S
 E220-400T30D
-
 E220-900T22S
 E220-900T22D
 E220-900T30S
