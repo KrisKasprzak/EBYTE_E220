@@ -662,7 +662,7 @@ bool EBYTE_E220::ReadParameters() {
 	}
 		
 	setMode(EBYTE_MODE_NORMAL);
-
+	Control = Data[0];
 	ADDH =  Params[0];
 	ADDL =  Params[1];
 	REG0 = Params[2];	
