@@ -459,28 +459,16 @@ int16_t EBYTE_E220::readRSSIAmbientNoise(){
 int16_t EBYTE_E220::readRSSISignalStrength(){
 	
 	int16_t RSSIValue = 0;
-
+	
 	if (!REG3_RSSIEnableBytes){		
 		return -999.0f;		
 	}
 	
-	//setMode(MODE_PROGRAM); // not needed as this method is intended to be run in normal mode
-
-	_s->write(0xC0);
-	_s->write(0xC1);
-	_s->write(0xC2);
-	_s->write(0xC3);	
-	_s->write((uint8_t) 0x00); //  rip through all registers (even write only)
-	_s->write(0x02); //  rip through all registers (even write only)
-	_s->readBytes((uint8_t*)& Data, (uint8_t) sizeof(Data));	
-	
-	// setMode(EBYTE_MODE_NORMAL); // not needed as this method is intended to be run in normal mode
-		
-	if (EBYTE_SUCCESS == Data[0]){
-		RSSIValue = Data[4];
-		RSSIValue = -(256 - RSSIValue);
-	}
-
+	// setMode(MODE_PROGRAM); // not needed as this method is intended to be run in normal mode	
+	// sender tacks on a byte after transmission, so... read it
+	delay(10); // this may need adjustment
+	RSSIValue = _s->read();
+	RSSIValue = -(256 - RSSIValue);
 	return RSSIValue;	
 }	
 	
