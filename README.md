@@ -21,6 +21,14 @@ E220-900T30D
  
 Usage of this library consumes around 600 bytes. 
 
+In my many years of using these devices, here's what I find most appealing
+1. Low cost
+2. Very reliable
+3. Power up send or receive order does not matter
+4. great range, in one application I have a temp sensor on one end of my house, and a base at the other end--never lost a bit. I also have these mounted on race cars for live telemetry, again never lost a bit
+5. simple to change settings
+6. rich options, and these units have RSSI data
+
 You only really need this library to program these EBYTE units. 
 
 For reading data structures, you can call readBytes method directly on the EBYTE's Serial object:
@@ -57,10 +65,8 @@ notes
 5. Serial pins for connection is dependent on the MCU, Teensy 3.2 for example: Serial1 are Rx=0, Tx=1, Serial2 Rx=9, Tx=10, Serial3 Rx=7, Tx=8. Arduino can be most serial pins using SoftwareSerial(MCU_Rx_pin, MCU_Tx_pin), except pins 0 and 1 as those are for USB usage
 6. Some MCU such as the Teensy, and ESP32 do NOT allow the use of SoftwareSerial to create a communications port. No worries, just hard wire the EBTYE to a dedicated UART port (pin 0 and pin 1 on a teensy 3.2 for Serial1.
 
-<b><h3>Manufacturers website</b></h3> 
-http://www.ebyte.com/en/
-example module this library is intended to be used with
-http://www.ebyte.com/en/product-view-news.aspx?id=174
+<b><h3>Product website</b></h3> 
+https://www.cdebyte.com/products/E220-900T22D
 
 <b><h3>General code usage</b></h3> 
 1. Create a serial object
