@@ -465,7 +465,8 @@ int16_t EBYTE_E220::readRSSISignalStrength(){
 	}
 	
 	// setMode(MODE_PROGRAM); // not needed as this method is intended to be run in normal mode	
-	// sender tacks on a byte after transmission, so... read it
+	// sender tacks on a byte after transmission (single byte or a struct), so... just read a single byte
+	// a slight delay seems to be needed
 	delay(10); // this may need adjustment
 	RSSIValue = _s->read();
 	RSSIValue = -(256 - RSSIValue);
@@ -479,7 +480,6 @@ method to build the REG bytes for programming
 void EBYTE_E220::BuildREG0() {
 	REG0 = 0;
 	REG0 = ((REG0_UARTDataRate & 0xFF) << 5) | ((REG0_ParityBit & 0xFF) << 3) | (REG0_AirDataRate & 0xFF);
-
 }
 
 void EBYTE_E220::BuildREG1() {
@@ -495,8 +495,6 @@ void EBYTE_E220::BuildREG3() {
 bool EBYTE_E220::getAux() {
 	return digitalRead(_AUX);
 }
-
-
 
 /*
 method to save parameters to the module
@@ -618,7 +616,6 @@ void EBYTE_E220::printParameters() {
 
 }
 
-
 /*
 method to read parameters, 
 */
@@ -639,8 +636,7 @@ bool EBYTE_E220::ReadParameters() {
 		_s->write((uint8_t) i); //  rip through all registgers (even write only)
 		_s->write(0x01); // get 1 byte at a time	
 		_s->readBytes((uint8_t*)& Data, (uint8_t) sizeof(Data));	
-		_s->flush();
-		delay(100);
+
 		Params[i] = 0; // clear out previous
 		Params[i] = Data[3];
 		
@@ -727,9 +723,9 @@ bool EBYTE_E220::ReadModel() {
 			break;
 		}
 	}
+	
 	delay(100); // data sheet says 30
 	setMode(EBYTE_MODE_NORMAL);
-
 
     if (strncmp(Model, prefix, len) == 0) {
         memmove(Model, Model + len, strlen(Model + len) + 1);
@@ -773,8 +769,6 @@ bool EBYTE_E220::ReadVersion() {
 	return true; // maybe someday I'll add some checker but version really doesn't matter
 	
 }
-
-
 
 /*
 method to clear the serial buffer
