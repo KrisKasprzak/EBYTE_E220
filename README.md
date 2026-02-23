@@ -95,11 +95,11 @@ For best range:
 In my experience when sending several data, I don't recommend sending comma seperated fields with some special characters bookending the data. Getting data is just too unreliable. If you need to send multiple types of data, create and send a struct. Of the 100's of MB's I've transmitted over 10 year, I've never lost a bit.
 <ul>
 <li> This library does not have any methods for sending or receiving data. Use standard serial.print or serial.write methods to write bytes of data.
- For writing data structures you can call write method directly on the EBYTE's Serial object</li>
+For writing data structures you can call write method directly on the EBYTE's Serial object. The example here is where MyData is a struct.</li>
 <br>
 <b>ESerial.write((uint8_t*) &MyData, (uint8_t) sizeof(MyData) );</b>
 <br>
- For sending and reading data structures, you call readBytes method directly on the EBYTE's Serial object (example here is where MyData is a struct):
+For reading data structures, you call readBytes method directly on the EBYTE's Serial object :
 <br>
 <b>ESerial.readBytes((uint8_t*)& MyData, (uint8_t) sizeof(MyData));</b>
 <br>
