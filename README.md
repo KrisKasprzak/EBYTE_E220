@@ -92,9 +92,18 @@ For best range:
 
 <b><h3>Data transmission packets</b></h3>
 <ul>
-<li> this library has a method for sending single bytes but if more data is to be sent, create a data structure and send the data structure using the librarys SendStruct(&struct, sizeof(struct)) method. Note pass by ref so include the & before structure name</li>
-<li> again slow data rates take longer, you will need to experiment with ideal air data rate range based on data size</li>
-<li> if you need to send data using a struct between different MCU's changes of how each processor packs will probably be different. If you get corrupted data on the recieving end, there are ways to force the compiler to not optimize struct packing--i've yet to get them to work. What worked for me is to use a library that creates the strut and handles sending. Check out EasyTransfer.h (google it and get your favorite author). In these libs you will use their method of sending and getting struct (there are hardware and software libs, use accordingly. Meaning you can use this library to program and manage settings but use EasyTransfer to handle sending data throught the serial lines the EBYTE is using. Sounds weird, but it's no differnet that say Serial1.sendBytes(...) as that is actually what this library is calling. Maybe some day i'll integrate EasyTranfer technology into this sendstruct lib.
+<li> This library does not have any methods for sending or receiving data. Use standard object.print or object.write methods</li>
+For reading data structures, you can call readBytes method directly on the EBYTE's Serial object (MyData can be a struct as well):
+<br>
+<br>
+<b>ESerial.readBytes((uint8_t*)& MyData, (uint8_t) sizeof(MyData));</b>
+<br>
+<br>
+For writing data structures you can call write method directly on the EBYTE's Serial object
+<br>
+<br>
+<b>ESerial.write((uint8_t*) &MyData, (uint8_t) sizeof(MyData) );</b>
+<li> if you need to send data using a struct between different MCU's changes of how each processor packs will probably be different. If you get corrupted data on the recieving end, there are ways to force the compiler to not optimize struct packing--I've yet to get packing to work. What worked for me is EasyTransfer.h (google it to get the repo). In these libs you will use their method of sending and getting struct. Meaning you can use this library to program and manage settings but use EasyTransfer to handle sending data throught the serial lines the EBYTE is using. Sounds weird, but it's no differnet that say Serial1.sendBytes(...) as that is actually what this library is calling.
 </ul>
 <b><h3>Debugging</b></h3>
 <ul>
