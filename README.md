@@ -1,10 +1,11 @@
-<b><h2><center>Updates </center>
+<b><h1><center>E220-xxxTxxx Transceivers</center></h1></b>
+<br>
 <h3>
 <li>V1.0 1/31/2026, initial check in </li>
 <li>V1.1 6/28/2026, improved reliability in readRSSIxxx</li>
-</h3></b>
+</h3>
 <br>
-<b><h2><center>E220-xxxTxxx Transceivers</center></h1></b>
+
 
 This library is intended to be used with UART type EBYTE transceivers (E220-xxxTxxx), which are small wireless units for MCU's such as
 Teensy, ESP32, Arduino and others. This library lets users program the operating parameters and both send and receive data.
