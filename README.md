@@ -6,6 +6,8 @@
 </h3>
 <br>
 
+![header image](https://raw.github.com/KrisKasprzak/EBYTE_E220/master/EBYTE_E220.jpg)
+
 
 This library is intended to be used with UART type LoRa EBYTE transceivers (E220-xxxTxxx), which are small wireless units for MCU's such as
 Teensy, ESP32, Arduino and others. This library lets users program the operating parameters, but use standard Serial commands for sending and receiving data.
