@@ -135,8 +135,8 @@ For reading data structures, you call readBytes method directly on the EBYTE's S
 
 <li> If transmitter and receiver are different MCU (Arduino <-> Teensy), sending data structures may pack differently, regardless of structure data types. This is due to how an 8-bit processor and 32-bit processor handle the packing process.\
 Option 1) is to use EasTransfer lib. I use this lib and it works well.\
- Option 2) try the __attribute__((packed)) variable attribute. Option\
- 3) and don't laugh, but if sending a float considering clipping the precision by multiplying a float to 100 (and recasting to an int), then divide that value by 100 on the receiving end (recasting to a float)</li>
+Option 2) try the __attribute__((packed)) variable attribute. Option\
+3) and don't laugh, but if sending a float considering clipping the precision by multiplying a float to 100 (and recasting to an int), then divide that value by 100 on the receiving end (recasting to a float)</li>
 
 <li> If you seem to get corrupt data from .printParameters, try addinng #include "avr/io.h" to your .INO program</li>
 
