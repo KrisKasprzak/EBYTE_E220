@@ -50,7 +50,7 @@ For writing data structures you can call write method directly on the EBYTE's Se
  
 <b><h3> Module connection </b></h3>
 Module	MCU						Description
-1. MO		Any digital pin*		pin to control working/program modes 
+1. MO		Any digital pin*		pin to control working/program modes
 2. M1		Any digital pin*		pin to control working/program modes
 3. Rx		Any digital pin*			pin to MCU TX pin (module transmits to MCU, hence MCU must receive data from module
 4. Tx		Any digital pin*			pin to MCU RX pin (module transmits to MCU, hence MCU must receive data from module
