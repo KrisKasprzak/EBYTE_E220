@@ -1,5 +1,6 @@
 <b><h2><center>Updates </center>
-<li>1/31/2026, initial check in </li>
+<li>V1.0 1/31/2026, initial check in </li>
+<li>V1.1 6/28/2026, improved reliability in readRSSIxxx</li>
 </h1></b>
 <br>
 <b><h2><center>E220-xxxTxxx Transceivers</center></h1></b>
