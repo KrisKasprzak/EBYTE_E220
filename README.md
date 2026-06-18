@@ -62,8 +62,8 @@ notes
 
 1. caution in connecting to Arduino pin 0 and 1 as those pins are for USB connection to PC so you can't have the EBYTE connected during programming. I recommend NOT using Arduino pins 0 and 1
 2. The signal lines for these units are 3V3 but are 5 volt tolerant, however 5 volts may result in communication failures. If using a 5 volt MCU such as arduino, you may need to do the following. 
-  a) You may need a 4K7-10K pullup to Rx and AUX pins (possibly Tx) if using and Arduino
-  b) If using an Arduino you may need a series 4K7 resistor between MCU Tx and the transceiver Rx.
+  a) You may need a 4K7-10K pullup to Rx and AUX pins (possibly Tx) if using and Arduino\
+  b) If using an Arduino you may need a series 4K7 resistor between MCU Tx and the transceiver Rx.\
 4. In some of my applications, I did not have enough digital pins to connect the Aux pin. No worries (just pass -1 in the argument list in the object create code). The library has a built-in delay to provide an appropriate delay to let the transmission complete--you may have to experiment with the amount.
 5. Serial pins for connection is dependent on the MCU, Teensy 3.2 for example: Serial1 are Rx=0, Tx=1, Serial2 Rx=9, Tx=10, Serial3 Rx=7, Tx=8. Arduino can be most serial pins using SoftwareSerial(MCU_Rx_pin, MCU_Tx_pin), except pins 0 and 1 as those are for USB usage
 6. Some MCU such as the Teensy, and ESP32 do NOT allow the use of SoftwareSerial to create a communications port. No worries, just hard wire the EBTYE to a dedicated UART port (pin 0 and pin 1 on a teensy 3.2 for Serial1.
