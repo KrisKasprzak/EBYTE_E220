@@ -7,10 +7,10 @@
 <br>
 
 
-This library is intended to be used with UART type EBYTE transceivers (E220-xxxTxxx), which are small wireless units for MCU's such as
-Teensy, ESP32, Arduino and others. This library lets users program the operating parameters and both send and receive data.
-This library is specific to E220 series only but will support the 400 or 900 series, or the 22 db or 30db units.
-All constants were extracted from several data sheets and listed in binary as that's how the data sheet represented each setting. This library is for the UART devices only.
+This library is intended to be used with UART type LoRa EBYTE transceivers (E220-xxxTxxx), which are small wireless units for MCU's such as
+Teensy, ESP32, Arduino and others. This library lets users program the operating parameters, but use standard Serial commands for sending and receiving data.
+This library is specific to E220 series units.
+All constants were extracted from the data sheet and listed in binary as that's how the data sheet represented each setting. This library is for the UART devices only.
 
 <b> EBYTE Model numbers (full list)</b>
 E220-400T22S
@@ -28,9 +28,9 @@ In my many years of using these devices, here's what I find most appealing
 1. Low cost
 2. Very reliable
 3. Power up send or receive order does not matter
-4. great range, in one application I have a temp sensor on one end of my house, and a base at the other end--never lost a bit. I also have these mounted on race cars for live telemetry, again never lost a bit
-5. simple to change settings
-6. rich options, and these units have RSSI data
+4. Great range, in one application I have a temp sensor on one end of my house, and a base at the other end--never lost a bit. I also have these mounted on race cars for live telemetry, again never lost a bit
+5. Simple to change settings
+6. Rich options, and these units have RSSI data
 
 You only really need this library to program these EBYTE units. 
 
@@ -60,7 +60,7 @@ Module	MCU						Description
 
 notes
 
-1. caution in connecting to Arduino pin 0 and 1 as those pins are for USB connection to PC so you can't have the EBYTE connected during programming. I recommend NOT using Arduino pins 0 and 1
+1. Caution in connecting to Arduino pin 0 and 1 as those pins are for USB connection to PC so you can't have the EBYTE connected during programming. I recommend NOT using Arduino pins 0 and 1
 2. The signal lines for these units are 3V3 but are 5 volt tolerant, however 5 volts may result in communication failures. If using a 5 volt MCU such as arduino, you may need to do the following.\
   a) You may need level shifters or possibly a simmple voltage divider for EBYTE Tx and AUX pins\
   b) You may be able to use a series 4K7 resistor between MCU Rx and EBYTE Tx and the EBYTE AUX\
@@ -77,8 +77,8 @@ https://www.cdebyte.com/products/E220-900T22D
 2. Create EBYTE_220 object that uses the serial object
 3. begin the serial object
 4. init() the EBYTE object
-5. set parameters (optional but required if sender and receiver are different)
-6. send or listen to sent data (single byte) OR create and send a data structure
+5. Set parameters (optional but required if sender and receiver are different)
+6. Send or listen to sent data (single byte) OR create and send a data structure
 
 <b><h3>Tips on usage</b></h3> 
 
