@@ -34,8 +34,7 @@
   
   Revision		Data		Author			Description
   1.0			1/28/2026	Kasprzak		Initial creation
-
-  
+  1.1			6/18/2026	Kasprzak		Fixed buffer issue with readRSSIxxx
  
   Module connection
   Module	MCU						Description
@@ -69,7 +68,7 @@
 #ifndef EBYTE_E220_H_LIB
 #define EBYTE_E220_H_LIB
 
-#define EBYTE_E220_VER 1.0
+#define EBYTE_E220_VER 1.1
 
 #if ARDUINO >= 100
 #include "Arduino.h"
@@ -226,9 +225,7 @@ public:
 	
 	int16_t readRSSIAmbientNoise();	
 	int16_t readRSSISignalStrength();
-	
-	
-	
+		
 	// mehod to print parameters
 	void printParameters();
 	
@@ -268,7 +265,7 @@ private:
 	// variable for the 6 bytes that are sent to the module to program it
 	// or bytes received to indicate modules programmed settings
 	uint8_t Params[9];
-	uint8_t Data[4];
+	uint8_t Data[5];
 
 	uint8_t Control;
 	uint8_t ADDH;
@@ -307,8 +304,6 @@ private:
 	uint8_t REG3_Reserve2;
 	uint8_t REG3_WOR;
 	
-	
-
 	char Model[30];
 	char Version[30];
 	uint8_t buf;
