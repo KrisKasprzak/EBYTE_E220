@@ -89,14 +89,14 @@ For best range:
 <li> Line of sight ideal, but my personal testing, transmission still successful with some obstructions</li>
 <li> Slow air data rates can improve range, but due to longer transmission time, how often data can be sent will be sacrificed</li>
 <li> Consider high gain antennas (can be purchased from the manufacturer) see their web site for details</li>
-<li> The data sheet says for max range, power the units with 5.0 volts (keep 3V3 on the signal lines). I personaly found little range differene with higher supply voltage</li>
- <li> The data sheet says for max range, set the air data rate to 2.4 bps. I personaly found little range differene with low data rates, and low data rates may limit how often you can send data. </li>
+<li> The data sheet says for max range, power the units with 5.0 volts (keep 3V3 on the signal lines). I personaly found little range difference with higher supply voltage</li>
+ <li> The data sheet says for max range, set the air data rate to 2.4 bps. One application sends 48 bytes ever second and best range was with lower air data rates </li>
  
 </ul>
 
 <b><h3>Data transmission packets</b></h3>
 
-In my experience when sending several data, I don't recommend sending comma seperated fields with some special characters bookending the data. Getting data is just too unreliable. If you need to send multiple types of data, create and send a struct. Of the 100's of MB's I've transmitted over 10 year, I've never lost a bit.
+In my experience when sending several data, I don't recommend sending comma seperated fields with some special characters bookending the data. Getting data is just too unreliable. If you need to send multiple types of data, create and send a struct. Of the 100's of MB's I've transmitted over 10 years, I've never lost a bit.
 <ul>
 <li> This library does not have any methods for sending or receiving data. Use standard serial.print or serial.write methods to write bytes of data.
 For writing data structures you can call write method directly on the EBYTE's Serial object. The example here is where MyData is a struct.</li>
@@ -108,12 +108,12 @@ For reading data structures, you call readBytes method directly on the EBYTE's S
 <b>ESerial.readBytes((uint8_t*)& MyData, (uint8_t) sizeof(MyData));</b>
 <br>
 <br>
-<li> if you need to send data using a struct between different MCU's changes of how each processor packs will probably be different. If you get corrupted data on the recieving end, there are ways to force the compiler to not optimize struct packing--I've yet to get packing to work. What worked for me is EasyTransfer.h (google it to get the repo). In these libs you will use their method of sending and getting struct. Meaning you can use this library to program and manage settings but use EasyTransfer to handle sending data throught the serial lines the EBYTE is using. Sounds weird, but it's no differnet that say Serial1.sendBytes(...) as that is actually what this library is calling.
+<li> If you need to send data using a struct between different MCU's. processor compilers will pack data differently. If you get corrupted data on the recieving end, there are ways to force the compiler to not optimize struct packing--I've yet to get packing to work. What worked for me is EasyTransfer.h (google it to get the repo). In these libs you will use their method of sending and getting struct. Meaning you can use this library to program and manage settings but use EasyTransfer to handle sending data throught the serial lines the EBYTE is using. Sounds weird, but it's no differnet that say Serial1.sendBytes(...).
 </ul>
 <b><h3>Debugging</b></h3>
 <ul>
  
-<li> If your wireless module is returning all 0's for the PrintParameters() method or just the model AND you are using hardware serial AND you are using an ESP32, make sure your are using  full serial definition in the begin() statement: like this</li>
+<li> If your wireless module is returning all 0's for the PrintParameters() method or just the model AND you are using hardware serial AND you are using an ESP32, you may have to begin the serial definition will full details like this</li>
 <br>
  
  - #include <HardwareSerial.h>
@@ -133,10 +133,19 @@ For reading data structures, you call readBytes method directly on the EBYTE's S
     
 <li> If you are using their 1W units (30 db power output), power the unit separately from the MCU's onboard power supply. The current draw may exceed the onboard rating resulting in destroying the MCU. I have destroyed the onboard voltage regulator on a NANO when trying to power a 1W unit.</li>
 
-<li> If transmitter and receiver are different MCU (Arduino <-> Teensy), sending data structures may pack differently, regardless of structure data types. This is due to how an 8-bit processor and 32-bit processor handle the packing process. Option 1) is to use EasTransfer lib. I use this lib and it works well. Option 2) try the __attribute__((packed)) variable attribute. Option 3) and don't laugh, but if sending a float considering multiplying a float to 100 (and recasting to an int), then divide that value by 100 on the receiving end (recasting to a float)</li>
+<li> If transmitter and receiver are different MCU (Arduino <-> Teensy), sending data structures may pack differently, regardless of structure data types. This is due to how an 8-bit processor and 32-bit processor handle the packing process.\
+Option 1) is to use EasTransfer lib. I use this lib and it works well.\
+ Option 2) try the __attribute__((packed)) variable attribute. Option\
+ 3) and don't laugh, but if sending a float considering clipping the precision by multiplying a float to 100 (and recasting to an int), then divide that value by 100 on the receiving end (recasting to a float)</li>
 
 <li> If you seem to get corrupt data from .printParameters, try addinng #include "avr/io.h" to your .INO program</li>
+
 <li> If you are powering  your EBYTE modules from a separate power source, make sure all grounds are connected</li>
+
+<li> If printParameters() returns valid data but you cannot send a struct, try these</li>
+ 1. start by sending a single byte--jsut to test if transmission is working\
+ 2. if send data in a timely manner, slow transmissions to say 2-3 sec between--just to test\
+ 3. consider slowing air data rate (default is 2.4 kbps)\
 
 </ul>
 
