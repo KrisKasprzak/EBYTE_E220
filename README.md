@@ -146,10 +146,14 @@ Option 3) and don't laugh, but if sending a float considering clipping the preci
 
 <li> If you are powering  your EBYTE modules from a separate power source, make sure all grounds are connected</li>
 
-<li> If printParameters() returns valid data but you cannot send a struct, try these</li>
- 1. start by sending a single byte--jsut to test if transmission is working\
- 2. if send data in a timely manner, slow transmissions to say 2-3 sec between--just to test\
- 3. consider slowing air data rate (default is 2.4 kbps)\
+<li> If printParameters() returns valid data but you cannot send a struct, try these</li>   
+
+1. start by sending a single byte--jsut to test if transmission is working
+    
+2. if send data in a timely manner, slow transmissions to say 2-3 sec between--just to test
+
+3. consider slowing air data rate (default is 2.4 kbps)
+   
 
 </ul>
 
