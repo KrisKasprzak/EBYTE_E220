@@ -123,7 +123,7 @@ For reading data structures, you call readBytes method directly on the EBYTE's S
  - Serial_0.begin(9600, SERIAL_8N1, 16, 17);
 
  
- <li> If your wireless module is returning all 0's for the printParameters() method, make sure your wiring is correct and working, MCU Rx needs to connecte to the EBYTE Tx and vice versa. Also make sure M0, M0 (OUTPUT supported pin), and AUX (input supported pin) are connected to valid digital ports. Most issues are due to incorrect data line connections </li>
+<li> If your wireless module is returning all 0's for the printParameters() method, make sure your wiring is correct and working, MCU Rx needs to connecte to the EBYTE Tx and vice versa. Also make sure M0, M0 (OUTPUT supported pin), and AUX (input supported pin) are connected to valid digital ports. Most issues are due to incorrect data line connections </li>
  
 <li> If your wireless module is returning all 0's for the printParameters() method, AND you are sure your wiring is correct, your module may be slow to react to pinMode change performed during a mode change. The datasheet says delay of 2 ms is needed, but I've found 10 ms is more reliable. With some units, even more time is needed. The library default is 50 ms, but increase this in the .h file if parameters are not correctly read.</li>
   
@@ -133,7 +133,7 @@ For reading data structures, you call readBytes method directly on the EBYTE's S
     
 <li> If you are using their 1W units (30 db power output), power the unit separately from the MCU's onboard power supply. The current draw may exceed the onboard rating resulting in destroying the MCU. I have destroyed the onboard voltage regulator on a NANO when trying to power a 1W unit.</li>
 
-<li> If transmitter and receiver are different MCU (Arduino <-> Teensy), sending data structures may pack differently, regardless of structure data types. This is due to how an 8-bit processor and 32-bit processor handle the packing process.   
+<li> If transmitter and receiver are different MCU (Arduino <-> Teensy), sending data structures may pack differently, regardless of structure data types. This is due to how an 8-bit processor and 32-bit processor handle the packing process.   </li> 
 Option 1) is to use EasTransfer lib. I use this lib and it works well.   
 Option 2) try the __attribute__((packed)) variable attribute.   
 Option 3) and don't laugh, but if sending a float considering clipping the precision by multiplying a float to 100 (and recasting to an int), then divide that value by 100 on the receiving end (recasting to a float)</li>
