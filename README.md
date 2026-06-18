@@ -61,7 +61,7 @@ Module	MCU						Description
 notes
 
 1. caution in connecting to Arduino pin 0 and 1 as those pins are for USB connection to PC so you can't have the EBYTE connected during programming. I recommend NOT using Arduino pins 0 and 1
-2. The signal lines for these units are 3V3 but are 5 volt tolerant, however 5 volts may result in communication failures. If using a 5 volt MCU such as arduino, you may need to do the following.\ 
+2. The signal lines for these units are 3V3 but are 5 volt tolerant, however 5 volts may result in communication failures. If using a 5 volt MCU such as arduino, you may need to do the following.\
   a) You may need level shifters or possibly a simmple voltage divider for EBYTE Tx and AUX pins\
   b) You may be able to use a series 4K7 resistor between MCU Rx and EBYTE Tx and the EBYTE AUX\
 4. In some of my applications, I did not have enough digital pins to connect the Aux pin. No worries (just pass -1 in the argument list in the object create code). The library has a built-in delay to provide an appropriate delay to let the transmission complete--you may have to experiment with the amount.
