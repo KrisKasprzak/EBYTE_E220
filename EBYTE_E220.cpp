@@ -49,21 +49,28 @@ for potential future module programming
 
 bool EBYTE_E220::init() {
 
-	bool ok = true;
-
 	pinMode(_AUX, INPUT);
 	pinMode(_M0, OUTPUT);
 	pinMode(_M1, OUTPUT);
 
 	setMode(EBYTE_MODE_NORMAL);
 
-	// get the EBYTE parameters
-	ok = ReadParameters();
+	// get the EBYTE Model
 
-	if (!ok) {
-		#ifdef DEBUG
-			Serial.println("ReadParameters failed");
-		#endif
+	if (!ReadModel()){
+		Serial.println("EBYTE_E220::ReadModel() fail");
+		return false;
+	}
+
+	// get the EBYTE version
+	if (!ReadVersion()){
+		Serial.println("EBYTE_E220::ReadVersion() fail");
+		return false;
+	}
+
+	// get the EBYTE parameters
+	if (!ReadParameters()) {
+		Serial.println("EBYTE_E220::ReadParameters failed");
 		return false;
 	}
 
@@ -79,24 +86,17 @@ void EBYTE_E220::CompleteTask(unsigned long timeout) {
 
 	unsigned long t = millis();
 
-	// make darn sure millis() is not about to reach max data type limit and start over
-	if (((unsigned long) (t + timeout)) == 0){
-		t = 0;
-	}
-
 	// if AUX pin was supplied and look for HIGH state
 	// note you can omit using AUX if no pins are available, but you will have to use delay() to let module finish
-	
-	// per data sheet control after aux goes high is 2ms so delay for at least that long
-	// some MCU are slow so give 50 ms
-	
+
 	if (_AUX != -1) {
 		
 		while (digitalRead(_AUX) == LOW) {
-			//Serial.println("EBYTE_E220 line 218 waiting for aux");
+			// Serial.println("EBYTE_E220::CompleteTask");
+
 			delay(2);
 			if ((millis() - t) > timeout){
-				//Serial.println("aux timeout");
+				Serial.println("FAIL EBYTE_E220::CompleteTask");
 				break;
 			}
 		}
@@ -104,7 +104,7 @@ void EBYTE_E220::CompleteTask(unsigned long timeout) {
 	else {
 		// if you can't use aux pin, use 4K7 pullup with Arduino
 		// you may need to adjust this value if transmissions fail
-		delay(1000);
+		delay(4000);
 
 	}
 
@@ -174,7 +174,6 @@ bool EBYTE_E220::reset() {
 			break;
 		}
 	}
-	
 	if (strncmp(Response, prefix, len) == 0) {
         memmove(Response, Response + len, strlen(Response + len) + 1);
     }
@@ -206,7 +205,6 @@ bool EBYTE_E220::restoreDefaults() {
 			break;
 		}
 	}
-	
 	if (strncmp(Response, prefix, len) == 0) {
         memmove(Response, Response + len, strlen(Response + len) + 1);
     }
@@ -428,26 +426,25 @@ float EBYTE_E220::getTransmitFrequency(){
 
 int16_t EBYTE_E220::readRSSIAmbientNoise(){
 	
-	int16_t RSSIValue = -999.0f;
+	int16_t RSSIValue = -999;
 
 	if (!REG1_RSSIEnableAmbientNoise){		
 		return RSSIValue;		
 	}
-
-	//setMode(MODE_PROGRAM); // not needed as this method is intended to be run in normal mode
-
+	
+	ClearBuffer();
+	
 	_s->write(0xC0);
 	_s->write(0xC1);
 	_s->write(0xC2);
 	_s->write(0xC3);	
 	_s->write((uint8_t) 0x00); 
-	_s->write(0x02); 
-	
+	_s->write((uint8_t) 0x02); 	
 	_s->readBytes((uint8_t*)& Data, (uint8_t) sizeof(Data));
+		
+	ClearBuffer();	
 	
-	//setMode(EBYTE_MODE_NORMAL); // not needed as this method is intended to be run in normal mode
-	
-	if (EBYTE_SUCCESS == Data[0]){
+	if (Data[0]== EBYTE_SUCCESS){
 		RSSIValue = Data[3];
 		RSSIValue = -(256 - RSSIValue);
 	}
@@ -456,20 +453,31 @@ int16_t EBYTE_E220::readRSSIAmbientNoise(){
 }	
 
 
-int16_t EBYTE_E220::readRSSISignalStrength(){
+int16_t EBYTE_E220::readRSSISignalStrength(){	
 	
-	int16_t RSSIValue = 0;
-	
+	int16_t RSSIValue = -999;
+
 	if (!REG3_RSSIEnableBytes){		
-		return -999.0f;		
+		return -999;		
 	}
+
+	ClearBuffer();
+
+	_s->write(0xC0);
+	_s->write(0xC1);
+	_s->write(0xC2);
+	_s->write(0xC3);	
+	_s->write((uint8_t) 0x00); 
+	_s->write((uint8_t) 0x02);  
+	_s->readBytes((uint8_t*)& Data, (uint8_t) sizeof(Data));
 	
-	// setMode(MODE_PROGRAM); // not needed as this method is intended to be run in normal mode	
-	// sender tacks on a byte after transmission (single byte or a struct), so... just read a single byte
-	// a slight delay seems to be needed
-	delay(10); // this may need adjustment
-	RSSIValue = _s->read();
-	RSSIValue = -(256 - RSSIValue);
+	ClearBuffer();	
+		
+	if (Data[0] == EBYTE_SUCCESS){
+		RSSIValue = (int16_t) Data[4];
+		RSSIValue = -(256 - RSSIValue);
+	}
+
 	return RSSIValue;	
 }	
 	
@@ -480,6 +488,7 @@ method to build the REG bytes for programming
 void EBYTE_E220::BuildREG0() {
 	REG0 = 0;
 	REG0 = ((REG0_UARTDataRate & 0xFF) << 5) | ((REG0_ParityBit & 0xFF) << 3) | (REG0_AirDataRate & 0xFF);
+
 }
 
 void EBYTE_E220::BuildREG1() {
@@ -495,6 +504,8 @@ void EBYTE_E220::BuildREG3() {
 bool EBYTE_E220::getAux() {
 	return digitalRead(_AUX);
 }
+
+
 
 /*
 method to save parameters to the module
@@ -560,9 +571,14 @@ bool EBYTE_E220::saveParameters(uint8_t val) {
 	for ( uint8_t i = 0; i < 8; i++){			
 		_s->write(Params[i]);
 	}
+	
+	delay(100);
+	_s->flush();
+	delay(100);
 
 	_s->readBytes((uint8_t*)& Data, (uint8_t) sizeof(Data));	
 	// check for return of C1
+	success = false;
 	if (Data[0] == EBYTE_SUCCESS){
 		success = true;
 	}
@@ -570,6 +586,80 @@ bool EBYTE_E220::saveParameters(uint8_t val) {
 	setMode(EBYTE_MODE_NORMAL);
 
 	return success;
+	
+}
+
+void EBYTE_E220::restoreDefaultsByteReset(){
+	
+	ADDH = 0;
+	 ADDL = 0;
+	 REG0 = 0b01100010;	
+	 REG1 = 0b00000000;
+	 REG2 = 18;  
+	 REG3 = 0b00000000;
+	 CRYPT_H = 0; 
+	 CRYPT_L = 0;
+	
+	ClearBuffer();
+
+	Serial.print("AddressHigh: ");
+	Serial.println(ADDH);
+
+	Serial.print("AddressLow: ");
+	Serial.println(ADDL);
+
+	Serial.print("REG0: ");
+	Serial.println(REG0);
+
+	Serial.print("REG1: ");
+	Serial.println(REG1);
+
+	Serial.print("REG1: ");
+	Serial.println(REG1);
+	
+	Serial.print("REG2: ");
+	Serial.println(REG2);
+
+	Serial.print("REG3: ");
+	Serial.println(REG3);
+
+	Serial.print("CRYPT_H: ");
+	Serial.println(CRYPT_H);
+
+	Serial.print("CRYPT_L: ");
+	Serial.println(CRYPT_L);
+	
+	Serial.print("VERSION: ");
+	Serial.println(Version);
+
+
+	setMode(MODE_PROGRAM);
+	
+	Params[0] = ADDH;
+	Params[1] = ADDL;
+	Params[2] = REG0;	
+	Params[3] = REG1;
+	Params[4] = REG2;  
+	Params[5] = REG3;
+	Params[6] = CRYPT_H; 
+	Params[7] = CRYPT_L;
+
+	_s->write(EBYTE_WRITE_PERMANENT);
+	_s->write((uint8_t)0x00);
+	_s->write(0x08);
+	for ( uint8_t i = 0; i < 8; i++){			
+		_s->write(Params[i]);
+	}
+	
+	delay(100);
+	_s->flush();
+	delay(100);
+
+	_s->readBytes((uint8_t*)& Data, (uint8_t) sizeof(Data));	
+	// check for return of C1
+
+
+	setMode(EBYTE_MODE_NORMAL);
 	
 }
 
@@ -585,7 +675,7 @@ void EBYTE_E220::printParameters() {
 	Serial.print(F("Version                : "));  Serial.println(Version);
 	Serial.print(F("PRODINFO  (HEX/DEC/BIN): "));  Serial.print(PRODINFO, HEX); Serial.print(F("/"));  Serial.print(PRODINFO, DEC); Serial.print(F("/"));  Serial.println(PRODINFO, BIN);	
 	Serial.print(F("RSSI Ambient Noise     : ")); Serial.print(readRSSIAmbientNoise()); Serial.println(F(" db"));
-	Serial.print(F("Transmit frequency     : ")); Serial.print(getTransmitFrequency()); Serial.println(F(" MHz"));
+	Serial.print(F("Transmit frequency     : ")); Serial.print(getTransmitFrequency(),3); Serial.println(F(" MHz"));
 	
 	
 	Serial.println(F(" "));
@@ -616,88 +706,75 @@ void EBYTE_E220::printParameters() {
 
 }
 
+
 /*
 method to read parameters, 
 */
 
 bool EBYTE_E220::ReadParameters() {
+	uint8_t ZERO = 0;
+	ClearBuffer();
+
+	setMode(MODE_PROGRAM);
+	_s->write(EBYTE_READ);
+	_s->write(ZERO); //  weird but 0 is considered false
+	_s->write(0x0b); // give me 11 bytes
+	delay(100);
+	_s->flush();
 	
-	if (!ReadModel()){
-		Serial.println("ReadModel() fail");
+	_s->readBytes((uint8_t*)& Params, (uint8_t) sizeof(Params));
+	
+	if (EBYTE_READ != Params[0]){
 		return false;
 	}
-	ReadVersion();	
 	
-	setMode(MODE_PROGRAM);
-	
-	for ( uint8_t i = 0; i < 9; i++){
-		
-		_s->write(EBYTE_READ);
-		_s->write((uint8_t) i); //  rip through all registgers (even write only)
-		_s->write(0x01); // get 1 byte at a time	
-		_s->readBytes((uint8_t*)& Data, (uint8_t) sizeof(Data));	
-
-		Params[i] = 0; // clear out previous
-		Params[i] = Data[3];
-		
-		#ifdef DEBUG
-			Serial.println("Reading parameters");
-			Serial.print("Command: ");
-			Serial.print(Data[0]);
-			Serial.print(", Start: ");
-			Serial.print(Data[1]);
-			Serial.print("Len: ");
-			Serial.print(Data[2]);
-			Serial.print(", Data: ");		
-			Serial.print("Params[");
-			Serial.print(i);		
-			Serial.print("]: ");		
-			Serial.print(Params[i], DEC);
-			Serial.print(" / ");
-			Serial.print(Params[i], BIN);
-			Serial.print(" / ");
-			Serial.println(Params[i], HEX);
-		#endif
-		
+	#ifdef DEBUG
+	for (uint8_t i = 0; i < sizeof(Params); i++){
+		Serial.print(i);
+		Serial.print(" - ");
+		Serial.print(Params[i], DEC);
+		Serial.print(" - ");
+		Serial.print(Params[i], BIN);
+		Serial.print(" - ");
+		Serial.println(Params[i], HEX);
 	}
-		
+	#endif
+
 	setMode(EBYTE_MODE_NORMAL);
-	Control = Data[0];
-	ADDH =  Params[0];
-	ADDL =  Params[1];
-	REG0 = Params[2];	
-	REG1 = Params[3];
-	REG2 = Params[4];
-	REG3 = Params[5];
-	CRYPT_H = Params[6]; // write only always read as 0
-	CRYPT_L = Params[7]; // write only always read as 0
-	PRODINFO = Params[8];
+
+	ADDH =  Params[3];
+	ADDL =  Params[4];
+	REG0 = Params[5];	
+	REG1 = Params[6];
+	REG2 = Params[7];
+	REG3 = Params[8];
+	CRYPT_H = Params[9]; // write only always read as 0
+	CRYPT_L = Params[10]; // write only always read as 0
+	PRODINFO = Params[11];
 	
-	ADDH  = getAddressH();
-	ADDL =  getAddressL();
+	//ADDH  = getAddressH();
+	//ADDL =  getAddressL();
 	Address =  getAddress();
 
-	REG0_UARTDataRate =  getUARTBaudRate();
-	REG0_ParityBit =  getParityBit();
-	REG0_AirDataRate =  getAirDataRate();
+	REG0_UARTDataRate = getUARTBaudRate();
+	REG0_ParityBit = getParityBit();
+	REG0_AirDataRate = getAirDataRate();
 	
-	REG1_PacketSize =  getPacketSize();
-	REG1_RSSIEnableAmbientNoise =  getRSSIAmbientNoise();
+	REG1_PacketSize = getPacketSize();
+	REG1_RSSIEnableAmbientNoise = getRSSIAmbientNoise();
 	REG1_SoftwareModeSwitching = getSoftwareModeSwitching();
 	REG1_TransmitPower =  getTransmitPower();
 	
-	Channel =  getChannel();
+	Channel = getChannel();
 	
 	REG3_RSSIEnableBytes = getRSSISignalStrength();
 	REG3_TransmitMethod = getTransmissionMethod();
 	REG3_LBTEnable = getLBTEnable();
 	REG3_WOR = getWORTIming();
 
-	if (EBYTE_SUCCESS == Data[0]){
-		return true;
-	}
-	Serial.println("707 readParameters() fail");
-	return false;
+
+	
+	return true;
 	
 }
 
@@ -712,6 +789,7 @@ bool EBYTE_E220::ReadModel() {
 	setMode(MODE_PROGRAM);
 	_s->print("AT+DEVTYPE=?\r\n");
 	delay(100); // data sheet says 30	
+	_s->flush();
 	while (_s->available()) {		
 		char c = _s->read();
 		if (c == '\n'){			
@@ -723,10 +801,8 @@ bool EBYTE_E220::ReadModel() {
 			break;
 		}
 	}
-	
 	delay(100); // data sheet says 30
 	setMode(EBYTE_MODE_NORMAL);
-
     if (strncmp(Model, prefix, len) == 0) {
         memmove(Model, Model + len, strlen(Model + len) + 1);
     }	
@@ -737,6 +813,7 @@ bool EBYTE_E220::ReadModel() {
 	return false;
 	
 }
+
 
 // the "C1" method for getting model and version are not supported
 // we must use good ol' AT commands
@@ -749,6 +826,7 @@ bool EBYTE_E220::ReadVersion() {
 	setMode(MODE_PROGRAM);
 	_s->print("AT+FWCODE=?\r\n");	
 	delay(100); // data sheet says 30	
+	_s->flush();
 	while (_s->available()) {		
 		char c = _s->read();
 		if (c == '\n'){			
@@ -770,6 +848,8 @@ bool EBYTE_E220::ReadVersion() {
 	
 }
 
+
+
 /*
 method to clear the serial buffer
 
@@ -782,11 +862,11 @@ this is called as part of the setmode
 void EBYTE_E220::ClearBuffer(){
 
 	unsigned long amt = millis();
-
+_s->flush();
 	while(_s->available()) {
 		_s->read();
 		if ((millis() - amt) > 5000) {
-          Serial.println("runaway");
+          Serial.println("FAIL EBYTE_E220::ClearBuffer()");
           break;
         }
 	}

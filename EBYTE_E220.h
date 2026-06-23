@@ -35,6 +35,7 @@
   Revision		Data		Author			Description
   1.0			1/28/2026	Kasprzak		Initial creation
   1.1			6/18/2026	Kasprzak		Fixed buffer issue with readRSSIxxx
+  1.2			6/22/2026	Kasprzak		Optimized parameter reading (much faster)
 
   
  
@@ -70,7 +71,7 @@
 #ifndef EBYTE_E220_H_LIB
 #define EBYTE_E220_H_LIB
 
-#define EBYTE_E220_VER 1.1
+#define EBYTE_E220_VER 1.2
 
 #if ARDUINO >= 100
 #include "Arduino.h"
@@ -228,8 +229,6 @@ public:
 	int16_t readRSSIAmbientNoise();	
 	int16_t readRSSISignalStrength();
 	
-	
-	
 	// mehod to print parameters
 	void printParameters();
 	
@@ -244,7 +243,7 @@ public:
 	// restore EBYTE to factory defaults
 	bool restoreDefaults();
 	
-	
+	void restoreDefaultsByteReset();
 
 private:
 
@@ -268,7 +267,7 @@ private:
 
 	// variable for the 6 bytes that are sent to the module to program it
 	// or bytes received to indicate modules programmed settings
-	uint8_t Params[9];
+	uint8_t Params[12];
 	uint8_t Data[5];
 
 	uint8_t Control;
