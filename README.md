@@ -2,7 +2,8 @@
 <br>
 <h3>
 <li>V1.0 1/31/2026, initial check in </li>
-<li>V1.1 6/28/2026, improved reliability in readRSSIxxx</li>
+<li>V1.1 6/18/2026, improved reliability in readRSSIxxx</li>
+<li>V1.2 6/22/2026, Optimized parameter reading</li>
 </h3>
 <br>
 
