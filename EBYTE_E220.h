@@ -25,7 +25,7 @@
   valid for E220-xxxTxxx series on LLCC68 chips
   
   This library is intended to be used with EBYTE_E220 transcievers, small wireless units for MCU's such as
-  Teensy and Arduino. This library let's users program the operating parameters and both send and recieve data.
+  Teensy, ESP32, and Arduino. This library let's users program the operating parameters and both send and recieve data.
   This company makes several modules with different capabilities, but most #defines here should be compatible with them
   All constants were extracted from several data sheets and listed in binary as that's how the data sheet represented each setting
   Hopefully, any changes or additions to constants can be a matter of copying the data sheet constants directly into these #defines
